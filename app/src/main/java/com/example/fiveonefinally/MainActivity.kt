@@ -1,5 +1,7 @@
 package com.example.fiveonefinally
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,58 +12,65 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.recyclerview.widget.RecyclerView.Adapter
+import androidx.recyclerview.widget.RecyclerView.*
 class MainActivity : AppCompatActivity() {
 
-    private val taskList = mutableListOf<Task>() // 任务列表
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var taskList: MutableList<String>
+    private lateinit var myAdapter: MyAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 设置RecyclerView
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this) // 使用线性布局管理器
-        val adapter = TaskAdapter(taskList) // 创建适配器
-        recyclerView.adapter = adapter // 设置适配器
+        // 初始化SharedPreferences对象
+        sharedPreferences = getSharedPreferences("task_list", Context.MODE_PRIVATE)
 
-        // 监听添加按钮
+        // 加载任务列表数据
+        loadTaskList()
+
+        // 获取RecyclerView并设置LayoutManager
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // 创建适配器并将其设置到RecyclerView上
+        myAdapter = MyAdapter(taskList)
+        recyclerView.adapter = myAdapter
+
+        // 获取添加按钮并设置点击事件监听器
         val addButton = findViewById<Button>(R.id.addButton)
         addButton.setOnClickListener {
+            // 获取输入框中的文本
             val inputText = findViewById<EditText>(R.id.inputText)
-            val description = inputText.text.toString().trim() // 获取输入框中的文本
-            if (description.isNotEmpty()) { // 如果文本不为空
-                val task = Task(description) // 创建新的Task对象
-                taskList.add(task) // 将Task对象添加到列表中
-                adapter.notifyDataSetChanged() // 更新适配器
-                inputText.setText("") // 清空输入框
+            val newTask = inputText.text.toString().trim()
+
+            // 将新任务添加到任务列表中
+            if (newTask.isNotEmpty()) {
+                taskList.add(newTask)
+                saveTaskList()
+                myAdapter.notifyDataSetChanged()
+                inputText.setText("")
             }
         }
     }
 
-    // 定义一个ViewHolder类来绑定任务视图
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(task: Task) {
-            itemView.findViewById<TextView>(R.id.descriptionTextView).text = task.description
+    // 从SharedPreferences中加载任务列表数据
+    private fun loadTaskList() {
+        taskList = mutableListOf()
+        val tasksString = sharedPreferences.getString("tasks", "")
+        if (!tasksString.isNullOrEmpty()) {
+            val tasksArray = tasksString.split(",").toTypedArray()
+            taskList.addAll(tasksArray)
         }
     }
 
-    // 定义一个适配器类
-    inner class TaskAdapter(private val taskList: List<Task>) :
-        RecyclerView.Adapter<TaskViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-            val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.task_item, parent, false)
-            return TaskViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-            holder.bind(taskList[position])
-        }
-
-        override fun getItemCount(): Int {
-            return taskList.size
-        }
+    // 将任务列表数据保存到SharedPreferences中
+    private fun saveTaskList() {
+        val editor = sharedPreferences.edit()
+        editor.putString("tasks", taskList.joinToString(","))
+        editor.apply()
     }
+
 }
