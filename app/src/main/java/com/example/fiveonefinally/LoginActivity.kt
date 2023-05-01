@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
             //2.判断是否为空
             if(!TextUtils.isEmpty(name1) and !TextUtils.isEmpty(password1)){
-                if((password==password1)and(name==name1)){
+                if((password.equals(password1))and(name.equals(name1))){
                     startActivity(Intent(this, MainActivity::class.java))
                 }else{
                     Toast.makeText(this@LoginActivity,"登录失败", Toast.LENGTH_SHORT).show()
