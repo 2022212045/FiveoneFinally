@@ -26,8 +26,8 @@ class LoginActivity : AppCompatActivity() {
         }
         mBinding.login.setOnClickListener {
             //1.获取输入框的值
-            val name1 = mBinding.counter.text.toString().trim()
-            val password1 = mBinding.password.text.toString().trim()
+            val name1 = mBinding.counter.text.toString()
+            val password1 = mBinding.password.text.toString()
 
             //2.判断是否为空
             if(!TextUtils.isEmpty(name1) and !TextUtils.isEmpty(password1)){
