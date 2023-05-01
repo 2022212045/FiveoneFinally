@@ -21,12 +21,12 @@ class LoginActivity : AppCompatActivity() {
     private fun initView() {
         val name = intent.getStringExtra("key_username")
         val password = intent.getStringExtra("key_password")
-        mBinding.registered?.setOnClickListener {
+        mBinding.registered.setOnClickListener {
             startActivity(Intent(this, RegisteredActivity::class.java))
         }
         mBinding.login.setOnClickListener {
             //1.获取输入框的值
-            val name1 = mBinding.counter?.text.toString().trim()
+            val name1 = mBinding.counter.text.toString().trim()
             val password1 = mBinding.password.text.toString().trim()
 
             //2.判断是否为空
