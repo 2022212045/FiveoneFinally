@@ -6,7 +6,9 @@ plugins {
 android {
     namespace 'com.example.fiveonefinally'
     compileSdk 33
-
+    buildFeatures {
+        viewBinding = true
+    }
     defaultConfig {
         applicationId "com.example.fiveonefinally"
         minSdk 21
